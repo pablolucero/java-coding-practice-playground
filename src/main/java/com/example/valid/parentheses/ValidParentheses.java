@@ -19,19 +19,21 @@ public class ValidParentheses {
 
         final Deque<Character> stack = new ArrayDeque<>();
 
-        try {
-            for (Character aParenthesis : parentheses) {
-                if (isAnOpener(aParenthesis)) {
-                    addToStack(aParenthesis, stack);
-                } else {
-                    removeFromStackAnOpenerParenthesisOfTheSameType(aParenthesis, stack);
+        for (Character aParenthesis : parentheses) {
+            if (isAnOpener(aParenthesis)) {
+                addToStack(aParenthesis, stack);
+            } else {
+                if (!theParenthesisHasTheSameTypeAsTheTopOfTheStack(aParenthesis, stack)) {
+                    return false;
                 }
+                removeFromStackAnOpenerParenthesisOfTheSameType(aParenthesis, stack);
             }
-        } catch (MismatchParenthesesException e) {
-            return false;
         }
-
         return stack.isEmpty();
+    }
+
+    private static boolean theParenthesisHasTheSameTypeAsTheTopOfTheStack(Character aParenthesis, Deque<Character> stack) {
+        return parenthesesHaveTheSameType(aParenthesis, stack.peekFirst());
     }
 
     private static char[] selectParentheses(String input) {
@@ -46,10 +48,13 @@ public class ValidParentheses {
     }
 
     private static void verifyOrFail(boolean condition) {
-        if (condition) throw new MismatchParenthesesException();
+        if (condition) throw new RuntimeException();
     }
 
     private static boolean parenthesesHaveTheSameType(Character aClosingParentheses, Character anOpenerParentheses) {
+        if (aClosingParentheses == null || anOpenerParentheses == null) {
+            return false;
+        }
         return OPENING_CLOSING_PARENTHESES_MAP.get(anOpenerParentheses).equals(aClosingParentheses);
     }
 
